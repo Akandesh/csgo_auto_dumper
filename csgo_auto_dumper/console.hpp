@@ -37,7 +37,7 @@ namespace console {
 			tm timeInfo{ };
 			GetCurrentSystemTime( timeInfo );
 			std::stringstream ss_time; // Temp stringstream to keep things clean
-			ss_time << "[" << std::put_time( &timeInfo, "%T" ) << "] ";
+			ss_time << std::put_time(&timeInfo, "[%F %T] ");
 
 			std::string print_text = ss_time.str( );
 			print_text.append( out );
@@ -45,6 +45,26 @@ namespace console {
 		}
 
 		SetConsoleTextAttribute( hConsole, normal );
+	}
+
+	void set_title_message(const char* msg, ...) {
+		tm timeInfo{ };
+		GetCurrentSystemTime(timeInfo);
+
+		va_list va_alist;
+		char logBuf[1024] = { 0 };
+
+		std::stringstream ss_time; // Temp stringstream to keep things clean
+		ss_time << std::put_time(&timeInfo, "[%T] ");
+
+		va_start(va_alist, msg);
+		_vsnprintf(logBuf + strlen(logBuf), sizeof(logBuf) - strlen(logBuf), msg, va_alist);
+		va_end(va_alist);
+
+		std::string print_text = ss_time.str();
+		print_text.append(logBuf);
+
+		SetConsoleTitle(print_text.c_str());
 	}
 
 	void print_success( bool newline, const char* str, ... ) {
@@ -55,7 +75,7 @@ namespace console {
 		char logBuf[ 1024 ] = { 0 };
 
 		std::stringstream ss_time; // Temp stringstream to keep things clean
-		ss_time << "[" << std::put_time( &timeInfo, "%T" ) << "] ";
+		ss_time << std::put_time( &timeInfo, "[%F %T] " );
 
 		va_start( va_alist, str );
 		_vsnprintf( logBuf + strlen( logBuf ), sizeof( logBuf ) - strlen( logBuf ), str, va_alist );
@@ -75,7 +95,7 @@ namespace console {
 		char logBuf[ 1024 ] = { 0 };
 
 		std::stringstream ss_time; // Temp stringstream to keep things clean
-		ss_time << "[" << std::put_time( &timeInfo, "%T" ) << "] ";
+		ss_time << std::put_time(&timeInfo, "[%F %T] ");
 
 		va_start( va_alist, str );
 		_vsnprintf( logBuf + strlen( logBuf ), sizeof( logBuf ) - strlen( logBuf ), str, va_alist );
